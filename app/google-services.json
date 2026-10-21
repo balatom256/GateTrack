@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "113405515652",
+    "project_id": "gate-track-871be",
+    "storage_bucket": "gate-track-871be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113405515652:android:e5d8f62b6865a2250b2fd1",
+        "android_client_info": {
+          "package_name": "SmartSecurity.gatetrackapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByY0UcjT4xfKJViB88W_YLBIHn5BZjc-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

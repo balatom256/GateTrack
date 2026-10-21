@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gt_navy">#1F3A5F</color>
+    <color name="gt_teal">#00A896</color>
+    <color name="gt_bg">#F3F6FA</color>
+    <color name="gt_text">#0B1F3A</color>
+    <color name="gt_muted">#44546A</color>
+    <color name="gt_white">#FFFFFF</color>
+    <color name="gt_navy_dark">#0B1F3A</color>
+    <color name="gt_teal_dark">#008577</color>
+    <color name="gt_red">#15803D</color>
+    <color name="gt_gold">#FFC107</color>
+</resources>
