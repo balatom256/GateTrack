@@ -37,6 +37,11 @@ class GuardDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityGuardDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
+            v.setPadding(0, 0, 0, bars.bottom)
+            insets
+        }
 
         binding.tvWelcome.text = "Signed in as $email"
         binding.rvEntries.layoutManager = LinearLayoutManager(this)
@@ -62,9 +67,16 @@ class GuardDashboardActivity : AppCompatActivity() {
             binding.btnViews.text = if (open) "VIEW MORE  ▼" else "VIEW MORE  ▲"
         }
         binding.btnLogout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Log out?")
+                .setMessage("You will need to sign in again.")
+                .setPositiveButton("Log out") { _, _ ->
+                    FirebaseAuth.getInstance().signOut()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 

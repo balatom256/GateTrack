@@ -50,6 +50,11 @@ class ResidentDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityResidentDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
+            v.setPadding(0, 0, 0, bars.bottom)
+            insets
+        }
 
         binding.tvWelcome.text = "Signed in as ${FirebaseAuth.getInstance().currentUser?.email}"
         binding.rvEntries.layoutManager = LinearLayoutManager(this)
@@ -59,10 +64,16 @@ class ResidentDashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, PreApprovalActivity::class.java))
         }
         binding.btnLogout.setOnClickListener {
-            stopService(Intent(this, VisitorAlertService::class.java))
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Log out?")
+                .setMessage("You will need to sign in again.")
+                .setPositiveButton("Log out") { _, _ ->
+                    FirebaseAuth.getInstance().signOut()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

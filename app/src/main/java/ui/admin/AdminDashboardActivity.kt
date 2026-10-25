@@ -7,7 +7,10 @@ import SmartSecurity.gatetrackapplication.ui.guard.EntryAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +35,12 @@ class AdminDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            v.setPadding(0, 0, 0, bars.bottom)
+            insets
+        }
 
         binding.tvWelcome.text = "Signed in as ${FirebaseAuth.getInstance().currentUser?.email}"
         binding.rvEntries.layoutManager = LinearLayoutManager(this)
@@ -63,9 +72,16 @@ class AdminDashboardActivity : AppCompatActivity() {
             binding.btnMonitor.text = if (open) "MONITORING  ▼" else "MONITORING  ▲"
         }
         binding.btnLogout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            AlertDialog.Builder(this)
+                .setTitle("Log out?")
+                .setMessage("You will need to sign in again.")
+                .setPositiveButton("Log out") { _, _ ->
+                    FirebaseAuth.getInstance().signOut()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 
@@ -97,46 +113,25 @@ class AdminDashboardActivity : AppCompatActivity() {
     }
 
     private fun applyFilter() {
-            val q = binding.etSearch.text.toString().trim().lowercase()
-            val today = dayFmt.format(Date())
+        val q = binding.etSearch.text.toString().trim().lowercase()
+        val today = dayFmt.format(Date())
 
-            val list = if (q.isEmpty()) {
-                all.filter { entry ->
-                    entry.timestamp?.let { date ->
-                        dayFmt.format(date) == today
-                    } ?: false
-                }
-            } else {
-                all.filter { e ->
-                    val day = e.timestamp?.let {
-                        dayFmt.format(it)
-                    } ?: ""
-
-                    val text = e.timestamp?.let {
-                        textFmt.format(it)
-                    } ?: ""
-
-                    listOf(
-                        e.visitorName,
-                        e.plateNumber,
-                        e.unitNumber,
-                        e.idNumber,
-                        e.guardName,
-                        e.purpose,
-                        e.status,
-                        e.presence,
-                        day,
-                        text
-                    ).any { value ->
-                        value.lowercase().contains(q)
-                    }
-                }
+        val list = if (q.isEmpty()) {
+            all.filter { e ->
+                e.timestamp?.let { d -> dayFmt.format(d) } == today
             }
-
-            adapter.submit(list)
-
-            binding.tvEmpty.visibility =
-                if (list.isEmpty()) View.VISIBLE else View.GONE
+        } else {
+            all.filter { e ->
+                val day = e.timestamp?.let { dayFmt.format(it) } ?: ""
+                val text = e.timestamp?.let { textFmt.format(it) } ?: ""
+                listOf(
+                    e.visitorName, e.plateNumber, e.unitNumber,
+                    e.idNumber, e.guardName, e.purpose, e.status, e.presence, day, text
+                ).any { it.lowercase().contains(q) }
+            }
         }
 
+        adapter.submit(list)
+        binding.tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
     }
+}
